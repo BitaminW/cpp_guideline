@@ -1,4 +1,5 @@
-'''c++
+## 포인터 정리
+'''cpp
 
 #include <bits/stdc++.h>
 
@@ -48,10 +49,6 @@ using namespace std;
 //	}
 //
 //};
-
-
-
-// RTTI     Runtime Type Imformation
 
 
 int main() {
@@ -113,5 +110,6 @@ int main() {
 
 	return 0;
 }
+
 
 '''
