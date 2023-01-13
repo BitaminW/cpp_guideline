@@ -1,56 +1,5 @@
 ## 포인터 정리
-'''CPP
-
-#include <bits/stdc++.h>
-
-using namespace std;
-
-//class Shape {
-//
-//public:
-//	virtual void Print() {
-//		cout << "Shape" << "\n";
-//	}
-//};
-//
-//class Circle : public Shape {
-//
-//public:
-//	virtual void Print() {
-//		cout << "circle" << "\n";
-//	}
-//};
-
-
-//class Base {
-//public:
-//	int a = 10;
-//
-//	Base() {
-//		cout << "Base called" << "\n";
-//	}
-//
-//	virtual int getA() {
-//		return a;
-//	}
-//
-//};
-//
-//class Derived : public Base {
-//public:
-//	int a = 100;
-//
-//	Derived() {
-//		cout << "Derived called" << "\n";
-//	}
-//
-//	virtual int getA() {
-//		return a;
-//	}
-//
-//};
-
-
+'''cpp
 int main() {
 
 	
