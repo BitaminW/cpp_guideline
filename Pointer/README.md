@@ -1,5 +1,5 @@
 ## 포인터 정리
-'''cpp
+'''C++
 
 #include <bits/stdc++.h>
 
