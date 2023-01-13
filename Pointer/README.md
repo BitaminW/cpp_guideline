@@ -1,6 +1,6 @@
 ## 포인터 정리
 
-'''cpp
+```cpp
 
 int main() {
 
@@ -62,5 +62,4 @@ int main() {
 	return 0;
 }
 
-
-'''
+```
