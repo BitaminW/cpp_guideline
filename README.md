@@ -1,3 +1,3 @@
-# cpp_guideline
+## cpp_guideline
 
-## C++ 잡지식 정리입니다.
+#### C++ 잡지식 정리입니다.
