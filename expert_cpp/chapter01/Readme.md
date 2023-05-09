@@ -203,4 +203,82 @@ int main() {
     int x = {3.14};     // 에러메세지 'conversion form 'double' to 'int' requires a narrowing conversion
 ```
 
+균일 초기화는 동적으로 할당되는 배열을 초기화할 떄도 적용할 수 있다.
+```cpp
+int* pArray = new int[4]{ 1,2,3,4 };
+```
 
+최신 C++20부터는 배열의 크기도 생략할 수 있다.
+
+```cpp
+int* pArray = new int[]{ 1,2,3,4 }; // C++ 20
+```
+
+
+### 열거 타입
+상수는 사실 연속적으로 나열한 숫자 중 하나를 표현한 것이다. 열거 타입을 사용하면 숫자를 나열하는 방식과 범위를 마음대로 정의해서 변수를 선언하는 데 활용할 수 있다.예를 들어 체스 프로그램을 작성할  때 각 말의 종류를 다음과 같이 int 타입의 상수로 표기한다고 하자.
+```cpp
+const int PieceTypeKing{ 0 };
+const int PieceTypeQueen{ 0 };
+const int PieceTypeRook{ 0 };
+const int PieceTypePawn{ 0 };
+int currentPiece{ PieceTypeKing };
+```
+
+위처럼 하드코딩해도 되지만 여러 상황이 발생할 수 있는데 현재 말을 표현하는 currentPiece은 const가 아니기 때문에 값을 수정할 수도 있다. 또한 앞서 정의하지 않은 -1과 같은 값으로 지정하면 심각한 오류를 발생 시킬수도 있다.
+
+이럴때 강타입 열거 타입을 적용하면 변수에 지정할 수 있는 값이 범위를 엄격하게 제한하기 떄문에 이러한 문제를 방지할 수 있다.
+```cpp
+enum class PieceType{King, Queen, Rook, Pawn};
+
+PieceType piece{PieceType::King};
+```
+
+이 떄 enum 타입을 구성하는 멤버는 내부적으로 정숫값으로 표현된다. 위 값에 0부터 차례로 값이 카운트된다.
+값의 범위를 별도로 지정할 수도 있다.
+
+```cpp
+enum class PieceType {
+	King = 1, Queen = 10, Rook = 55, Pawn = 3
+};
+PieceType piece{ PieceType::Pawn };
+```
+
+하지만 enum 타입을 구성하는 멤버가 정숫값으로 표현된다고 해서 자동으로 정수로 형변환되지 않는다.
+```cpp
+PieceType piece{ PieceType::Pawn };
+
+int main() {
+	cout << static_cast<int>(piece) << "\n";
+}
+```
+위와 같이 형변환을 실행해줘야한다. enum class 가 아닌 기본 enum 을 사용한다면 자동으로 정수로 형변환이 된다.
+그렇기 때문에 서로 다른 열거 타입이 있어도 서로 비교가 가능했다.
+```cpp
+enum TestType1 {
+	one = 1, two = 2, three = 3
+};
+
+enum TestType2 {
+	four = 4, five = 5, six = 6
+};
+
+int main() {
+
+	TestType1 num1{ TestType1::one };
+	TestType2 num2{ TestType2::four };
+
+	if (num1 != num2) {
+		cout << "비교가 가능합니다." << endl;
+	}
+
+}
+```
+실제로 내부값이 정수로 취급하기 때문에 비교가 되지만 의미상으로 두 enum은 서로 다른 타입이라는것이 옳지않다.
+
+C++20 부터는 using enum으로 선언하면 열것값을 길게 풀어 쓰지 않아도 된다.
+```cpp
+using enum PieceType;
+PieceType piece{ King };    // using 을 사용하여 길게 쓰지 않아도됨
+piece = PieceType::Queen;   // using 을 사용하지 않았기 때문에 길게 써야함
+```
