@@ -22,7 +22,7 @@ C++로 작성된 소스 코드를 프로그램으로 만드는 빌드 작업은 
 >C 표준 라이브러리 헤더를 C++ 에서도 사용할 수 있다.
 ><stdio.h> 를 <cstdio> 로 .h 확장자 대신 c 접두어가 붙는다.
 
-#### 자주 사용하는 전처리 지시자 정리
+##### 자주 사용하는 전처리 지시자 정리
 #
 |`전처리 지시자`|
 |------------|
@@ -32,24 +32,37 @@ C++로 작성된 소스 코드를 프로그램으로 만드는 빌드 작업은 
 |#ifndef [키] #endif|
 |#pragma [xyz] |
 
-#### 중복 include를 막는 예시
+##### 중복 include를 막는 예시
 ```cpp
-#ifndef MYHEADER_H
-#define MYGEADER_H
+#ifndef MYHEADER_H  // 만약에 이 헤더파일을 define 하지 않았다면
+#define MYGEADER_H  // << endif가 나오기 전까지 이 부분을 포함시켜라
 // 헤더 내용
 #endif
 ```
 
 현재 사용하는 컴파일러에서 #pragma once 지시자를 사용할 수 있다.(최신 컴파일러는 대부분 지원한다.)
 ```cpp
-#pragma once
+#pragma once    // 1번만 컴파일 하고 그 뒤로부터 동일한 파일의 경우 읽기조차 하지 않는다.
 ```
 
-
 ### 네임스페이스
+네임스페이스는 코드에서 이름이 서로 충돌하는 문제를 해결하기 위해 나온 개념이다. 예를 들어 foo() 함수를 정의해서 코드를 작성하다가 외부 라이브러리가 필요해서 추가했는데 그 라이브러리에도 동일한 이름에 foo()함수가 존재할 수도 있다. 이러한 문제를 방지하기 위해서 사용한다.
+```cpp
+namespace mycode{
+    void foo(){
+        std::cout << "foo() called in the mycode namespace" << std::endl;
+    }
+}
 
-#### 중첩 네임스페이스
+mycode::foo(); // mycode 네임스페이스에 정의된 foo() 함수를 호출한다.
+```
 
+mycode 네임스페이스 블록 안에서 접글할 때는 네임스페이스 접두어를 붙이지 않아도 된다. 또한 using 키워드로 네임스페이스 접두어를 생략할 수도 있다.
 
-#### 네임스페이스 앨리어스
+```cpp
+using namespace mycode;
 
+int main(){
+    foo();  // mycode::foo(); 와 동일하다.
+}
+```
