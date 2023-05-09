@@ -66,3 +66,141 @@ int main(){
     foo();  // mycode::foo(); 와 동일하다.
 }
 ```
+
+한 소스 파일에 using 지시자를 여러 개 지정할 수도 있다. 하지만 이 기능은 남용하지 않도록 주의 해야한다. 동일한 이름을 포함하는 두 개의 네임스페이스를 사용하는 경우에는 이름 충돌이 다시 발생할 것이다. 또한 실수로 엉뚱한 함수를 호출하지 않으려면
+현재 코드에서 사용하는 네임스페이스를 명확히 파악해야 한다.
+
+네임스페이스 안에 있는 특정한 항목만 가리키도록 using 문을 작성할 수 있다.
+```cpp
+#include <iostream>
+
+using std::cout;
+
+int main() {
+	cout << "Hello world!";
+}
+```
+
+### 중첩 네임스페이스
+중첩 네임스페이스는 다른 네임스페이스 안에 있는 네임스페이스를 말한다.이 떄 각 네임스페이스는 더블 콜론(::)으로 구분한다.
+
+C++17 이전에는 이러한 간결한 문법을 지원하지 않아서 아래와 같이 작성했다.
+```cpp
+namespace TestLibraries {
+	namespace Networking {
+		namespace FTP {
+			// domsomething..
+		}
+	}
+}
+```
+
+하지만 C++17부터 지원하는 중첩 네임스페이스를 사용하면 아래와 같이 사용할 수 있다.
+```cpp
+namespace TestLibraries::Networking::FTP {
+	// dosomething
+}
+```
+
+### 네임스페이스 앨리어스
+네임스페이스 앨리어스를 사용하면 네임스페이스의 이름을 다르게 만들거나 또는 더 짧게 만들 수 있다.
+```cpp
+namespace TestLibraries::Networking::FTP {
+	int test = 10;
+}
+namespace MyFTP = TestLibraries::Networking::FTP;   // 네임스페이스 별칭을 MyFTP라고 지정했다.
+
+int main() {
+	cout << MyFTP::test;
+}
+```
+
+### 리터럴
+리터럴은 코드에 표시한 숫자나 스프링과 같은 값을 의미한다. C++는 다양한 표준 리터럴을 제공한다. 숫자는 다음과 같은 리터럴로 표현할 수 있다.(아래 나온 값은 모두 숫자 123을 가르킨다.)
+
++ 10진수 리터럴: 123
++ 8진수 리터럴: 0173
++ 16진수 리터럴: 0x7B
++ 이진수 리터럴: 0b1111011
+
+또한 C++에서는 다음과 같은 리터럴도 지원한다.
+
++ 부동소수점 값 (3.14f)
++ 배점도 부동소수점 값 (3.14)
++ 16진수 부동소수점 리터럴 (0x3.ABCp-10, 0xb.cp121)
++ 단일 문자 ('a')
++ \0으로 끝나는 문자 배뎔 ("Hello world")
+
+리터럴 타입을 직접 정의할 수도 있다.
+
+숫자 리터럴에서는 자릿수 구분자를 사용할 수 있다.
++ 23'465'789
++ 0.132'456f
+
+
+### 균일 초기화(Uniform initaulization)
+C++11 부터 지원하는 균일 초기화는 {}기호를 통해 사용한다.
+```cpp
+    int a = 10;
+    int b {10};
+```
+
+C++11 이전에는 타입의 초기화 방식이 일정하지 않았다. 예를 들어 원을 구조체로 정의한 경우와 클래스로 작성한 경우를 살펴보자.
+
+```cpp
+struct CircleStruct {
+	int x, y;
+	double radius;
+};
+
+class CircleClass {
+private:
+	int x, y;
+	double radius;
+
+public:
+	CircleClass(int x, int y, double radius) 
+		: x{x}, y{y}, radius{ radius } {}
+};
+```
+
+C++11 이전에는 구조체로 선언한 변수와 클래스로 선언한 변수를 초기화하는 방법이 서로 달랐다.
+
+```cpp
+	CircleStruct circle1 = { 10, 20, 2.5 };
+    CircleClass circle2(10, 10, 2.5);
+```
+
+구조체에 대해서는 {}을 적용한 반면 클래스에 대해서는 함수 표기법인 ()로 생성자를 호출한다.하지만 C++11부터 타입을 초기화할 때 유니폼 초기화 문법을 사용하는 초기화 방식이 통일되었다.
+또한 위 생성자를 작성할 때 사용한 멤버 이니셜라이저에서도 ()대신 {} 균일 초기화를 사용할 수 있다.
+
+균일 초기화는 구조체와 클래스뿐 아니라 C++에 있는 모든 대상을 초기화하는데 적용할 수 있다.
+```cpp
+int a = 1;
+int b(2);
+int c = {3};    // 균일초기화
+int d{4};       // 균일초기화
+```
+
+#### 축소 변환 방지
+균일 초기화에서 큰 장점이 있다. 바로 축소 변환을 방지할 수 있다. 다음 코드를 살펴보자
+
+```cpp
+void func(int x) {
+	cout << x << endl;
+}
+
+int main() {
+	int x = 3.14;
+	func(3.14);
+	func(x);
+
+}
+```
+코드를 살펴보면 x는 모두 int타입이기 때문에 들어간 3.14는 모두 값 손실이 일어난다. 하지만 C++11 표준을 완전히 지원하는 컴파일러를 사용하고 유니폼 초기화를 사용한다면 에러 메세지가 생성된다.
+
+```cpp
+    int x = {3.14};     // 에러메세지 'conversion form 'double' to 'int' requires a narrowing conversion
+```
+
+
