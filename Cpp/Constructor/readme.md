@@ -166,3 +166,113 @@ String s2 = "Hello";
 s1 = s2;
 ```
 다음과 같은 코드를 작성하게 된다면 에러가 발생합니다.
+기본적으로 대입연산자는 디폴트 연산자가 사용되기 떄문에 위 코드에서 디폴트 대입연산자는 얕은 복사를 일으킵니다.
+대입할땐 문제가 되지 않지만 소멸자를 호출할 떄 동일한 메모리를 두번 해제하기 때문에 문제가 발생합니다.(사실 사용자 또한 얕은복사를 원하는게 아니라면 동일한 곳을 가르키기 때문에 대입할 떄 또한 원하지 않는 동작을 야기합니다.)
+
+
+```cpp
+	String& operator=(String& rhs) {
+
+		// this가 자기 자신이 아닐경우에
+		if (this != &rhs) {
+			delete[] str;
+
+			len = rhs.len;
+			str = new char[len + 1];
+			strcpy(str, rhs.str);
+		}
+		return *this;
+	}
+```
+
+위와 같이 구현해줍니다. 사실 위에서 s1 = s2 라는 구문은 아래구문과 동일합니다.
+
+```cpp
+s1.operator=(s2);
+```
+
+위에서 this != &rhs 를 하는 이유는 자기 자신을 대입했을때 문제가 발생하기 떄문입니다. 예를들어서
+
+```cpp
+s1 = s1;
+``` 
+이런식으로 작성해도 에러가 발생하지 않습니다. 하지만 기본적으로 delete[] str; 을 실행하면서 메모리를 지우고 아래 복사하는 구문을 실행하기 때문에 의도치 않은 동작이 발생합니다.
+
+또한 반환값을 참조자로 하는 이유는 return *this 에서 자기 자신을 반환하면서 임시객체를 생성하게 되는데 이 때 참조값이 아닌 값 자체를 반환하게 되면 의미없는 복사생성이 일어나게 됩니다.
+
+
+
+```cpp
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+
+static int cnt = 0;
+
+class String {
+
+private:
+	int len;
+	char* str;
+
+public:
+
+	String() : len{ 0 }, str{ nullptr } {}
+	String(const char* strData) : String() {
+		len = strlen(strData);
+		str = new char[len + 1];
+		strcpy(str, strData);
+	}
+
+	String(const String& rhs){
+		len = strlen(rhs.str);
+		str = new char[len + 1];
+		strcpy(str, rhs.str);
+		std::cout << "복사생성자 호출" << "\n";
+	}
+
+	String& operator=(String& rhs) {
+
+		// this가 자기 자신이 아닐경우에
+		if (this != &rhs) {
+			delete[] str;
+
+			len = rhs.len;
+			str = new char[len + 1];
+			strcpy(str, rhs.str);
+		}
+		return *this;
+	}
+
+	~String() {
+		delete[] str;
+		++cnt;
+		std::cout << "소멸자 호출: " << cnt << "\n";
+	}
+
+	int getLen() const {
+		return len;
+	}
+
+	char* getStr() const {
+		return str;
+	}
+};
+
+int main() {
+
+	String s1;
+	String s2 = "Hello";
+	std::cout << s2.getStr() << " : " << s2.getLen() << "\n";
+
+	String s3 = s2;
+	std::cout << s3.getStr() << " : " << s3.getLen() << "\n";
+	s1 = s2;
+	std::cout << s1.getStr() << " : " << s1.getLen() << "\n";
+	s1 = s1;	// 자기자신을 대입하면 아무일도 안하고 자기자신을 반환함
+	std::cout << s1.getStr() << " : " << s1.getLen() << "\n";
+
+	return 0;
+}
+
+
+```
